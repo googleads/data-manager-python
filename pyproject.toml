@@ -17,7 +17,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "google-ads-data-manager-util"
+name = "google-ads-datamanager-util"
 version = "0.2.0"
 description = "Utilities for the Data Manager API"
 readme = "./README.rst"
@@ -50,7 +50,7 @@ dev = [
     "nox >= 2020.12.31, < 2022.6",
     # Include the dependencies for samples for convenience, since sample updates
     # are often part of the dev process.
-    "google-ads-data-manager-util[samples]",
+    "google-ads-datamanager-util[samples]",
 ]
 samples = [
     "google-ads-datamanager ~= 0.1",
