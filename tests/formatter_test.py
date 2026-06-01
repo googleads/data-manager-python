@@ -49,6 +49,24 @@ class FormatterTest(TestCase):
             "Periods should be stripped from googlemail.com address",
         )
 
+        self.assertEqual(
+            "janedoe@googlemail.com",
+            self.formatter.format_email_address("Jane.Doe+shopping@googlemail.com"),
+            "Plus sign and everything after should be stripped from googlemail.com address",
+        )
+
+        self.assertEqual(
+            "janedoe@gmail.com",
+            self.formatter.format_email_address("Jane.Doe+shopping@gmail.com"),
+            "Plus sign and everything after should be stripped from gmail.com address",
+        )
+
+        self.assertEqual(
+            "user.name+nyc@example.com",
+            self.formatter.format_email_address("user.name+NYC@Example.com"),
+            "Plus sign and everything after should not be stripped from non google emails",
+        )
+
     def test_format_email_address_invalid_inputs(self):
         with self.assertRaises(ValueError):
             self.formatter.format_email_address(None)
