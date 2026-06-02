@@ -46,7 +46,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black",
+    "black[jupyter]",
     "nox >= 2020.12.31, < 2022.6",
     # Include the dependencies for samples for convenience, since sample updates
     # are often part of the dev process.
