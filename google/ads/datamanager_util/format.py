@@ -90,6 +90,9 @@ class Formatter:
             # "Create variations of your email address" at:
             # https://support.google.com/a/users/answer/9282734
 
+            # Removes plus sign (+) and all characters that follow it.
+            user = user.split("+")[0]
+
             # Removes all periods (.).
             user = re.sub("\\.", "", user)
             if len(user) == 0:
