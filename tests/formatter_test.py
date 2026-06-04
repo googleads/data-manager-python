@@ -51,13 +51,17 @@ class FormatterTest(TestCase):
 
         self.assertEqual(
             "cloudysanfrancisco@googlemail.com",
-            self.formatter.format_email_address("Cloudy.SanFrancisco+shopping@googlemail.com"),
+            self.formatter.format_email_address(
+                "Cloudy.SanFrancisco+shopping@googlemail.com"
+            ),
             "Plus sign and everything after should be stripped from googlemail.com address",
         )
 
         self.assertEqual(
             "cloudysanfrancisco@gmail.com",
-            self.formatter.format_email_address("Cloudy.SanFrancisco+shopping@gmail.com"),
+            self.formatter.format_email_address(
+                "Cloudy.SanFrancisco+shopping@gmail.com"
+            ),
             "Plus sign and everything after should be stripped from gmail.com address",
         )
 
