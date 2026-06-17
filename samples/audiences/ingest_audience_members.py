@@ -16,7 +16,7 @@
 
 
 import argparse
-import csv
+import json
 import logging
 from typing import Dict, List, Optional
 
@@ -35,7 +35,7 @@ def main(
     operating_account_type: datamanager_v1.ProductAccount.AccountType,
     operating_account_id: str,
     audience_id: str,
-    csv_file: str,
+    json_file: str,
     validate_only: bool,
     login_account_type: Optional[
         datamanager_v1.ProductAccount.AccountType
@@ -54,7 +54,7 @@ def main(
      operating_account_type: the account type of the operating account.
      operating_account_id: the ID of the operating account.
      audience_id: the ID of the destination audience.
-     csv_file: the CSV file containing member data.
+     json_file: the JSON file containing member data.
      validate_only: whether to enable validate_only on the request.
      login_account_type: the account type of the login account.
      login_account_id: the ID of the login account.
@@ -91,13 +91,13 @@ def main(
         encrypter = Encrypter.create_for_gcp_kms(key_uri)
 
     # Reads the input file.
-    member_rows: List[Dict[str, str]] = read_member_data_file(csv_file)
+    member_rows: List[Dict[str, List[str]]] = read_member_data(json_file)
     audience_members: List[datamanager_v1.AudienceMember] = []
-    member_row: Dict[str, str]
+    member_row: Dict[str, List[str]]
     for member_row in member_rows:
         user_data = datamanager_v1.UserData()
         email: str
-        for email in member_row["emails"]:
+        for email in member_row.get("emails", []):
             try:
                 processed_email: str = formatter.process_email_address(
                     email, Encoding.HEX, encrypter
@@ -109,7 +109,7 @@ def main(
                 # Skips invalid input.
                 continue
         phone: str
-        for phone in member_row["phone_numbers"]:
+        for phone in member_row.get("phoneNumbers", []):
             try:
                 processed_phone: str = formatter.process_phone_number(
                     phone, Encoding.HEX, encrypter
@@ -195,6 +195,9 @@ def main(
             # Sets encryption info on the request.
             request.encryption_info = encryption_info
 
+        # Logs the request.
+        _logger.info("Request #%d:\n%s", request_count, request)
+
         # Sends the request.
         response: datamanager_v1.IngestAudienceMembersResponse = (
             client.ingest_audience_members(request=request)
@@ -206,47 +209,16 @@ def main(
     _logger.info("# of requests sent: %d", request_count)
 
 
-def read_member_data_file(csv_file: str) -> List[Dict[str, str]]:
-    """Reads the comma-separated member data file.
+def read_member_data(json_file: str) -> List[Dict[str, List[str]]]:
+    """Reads the JSON member data file.
 
     Args:
-      csv_file: the member data file. Expected format is one comma-separated row
-        per audience member, with a header row containing headers of the form
-        "email_..." or "phone_...".
+      json_file: the member data file. Expected format is a JSON array of
+        objects, where each object can contain "emails" and "phoneNumbers"
+        arrays.
     """
-    members = []
-    with open(csv_file, "r") as f:
-        reader = csv.DictReader(f.readlines())
-        line_num = 0
-        for member_row in reader:
-            line_num += 1
-            member = {
-                "emails": [],
-                "phone_numbers": [],
-            }
-            for field_name, field_value in member_row.items():
-                if not field_name:
-                    # Ignores trailing field without a corresponding header.
-                    continue
-                field_value = field_value.strip()
-                if len(field_value) == 0:
-                    # Ignores blank/empty value.
-                    continue
-
-                if field_name.startswith("email_"):
-                    member["emails"].append(field_value)
-                elif field_name.startswith("phone_"):
-                    member["phone_numbers"].append(field_value)
-                else:
-                    _logger.warning(
-                        "Ignoring unrecognized field: %s", field_name
-                    )
-            if member["emails"] or member["phone_numbers"]:
-                members.append(member)
-            else:
-                _logger.warning("Ignoring line #%d. No data.", line_num)
-
-    return members
+    with open(json_file, "r") as f:
+        return json.load(f)
 
 
 if __name__ == "__main__":
@@ -303,10 +275,10 @@ if __name__ == "__main__":
         help="The ID of the destination audience.",
     )
     parser.add_argument(
-        "--csv_file",
+        "--json_file",
         type=str,
         required=True,
-        help="Comma-separated file containing user data to ingest.",
+        help="JSON file containing user data to ingest.",
     )
     parser.add_argument(
         "--key_uri",
@@ -337,7 +309,7 @@ if __name__ == "__main__":
         args.operating_account_type,
         args.operating_account_id,
         args.audience_id,
-        args.csv_file,
+        args.json_file,
         args.validate_only == "true",
         args.login_account_type,
         args.login_account_id,
