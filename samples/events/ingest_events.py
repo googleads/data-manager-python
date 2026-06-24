@@ -14,7 +14,6 @@
 # limitations under the License.
 """Sample of sending an IngestEventsRequest without encryption."""
 
-
 import argparse
 import json
 import logging

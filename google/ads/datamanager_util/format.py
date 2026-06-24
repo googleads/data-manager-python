@@ -79,7 +79,7 @@ class Formatter:
         parts = email.split("@")
         if len(parts) != 2:
             raise ValueError("Email is not of the form user@domain")
-        (user, domain) = (parts[0], parts[1])
+        user, domain = (parts[0], parts[1])
         if len(user) == 0:
             raise ValueError("Email address without the domain is empty")
         if len(domain) == 0:
