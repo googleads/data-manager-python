@@ -14,16 +14,16 @@
 # limitations under the License.
 """Sample of sending an IngestAudienceMembersRequest with the option to use encryption."""
 
-
 import argparse
 import json
 import logging
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from google.ads import datamanager_v1
 from google.ads.datamanager_util import Encrypter
 from google.ads.datamanager_util import Formatter
 from google.ads.datamanager_util.format import Encoding
+from google.protobuf.timestamp_pb2 import Timestamp
 
 _logger = logging.getLogger(__name__)
 
@@ -32,18 +32,14 @@ _MAX_MEMBERS_PER_REQUEST = 10_000
 
 
 def main(
-    operating_account_type: datamanager_v1.ProductAccount.AccountType,
+    operating_account_type: str,
     operating_account_id: str,
     audience_id: str,
     json_file: str,
     validate_only: bool,
-    login_account_type: Optional[
-        datamanager_v1.ProductAccount.AccountType
-    ] = None,
+    login_account_type: Optional[str] = None,
     login_account_id: Optional[str] = None,
-    linked_account_type: Optional[
-        datamanager_v1.ProductAccount.AccountType
-    ] = None,
+    linked_account_type: Optional[str] = None,
     linked_account_id: Optional[str] = None,
     key_uri: str = None,
     wip_provider: str = None,
@@ -91,10 +87,11 @@ def main(
         encrypter = Encrypter.create_for_gcp_kms(key_uri)
 
     # Reads the input file.
-    member_rows: List[Dict[str, List[str]]] = read_member_data(json_file)
+    member_rows: List[Dict[str, Any]] = read_member_data(json_file)
     audience_members: List[datamanager_v1.AudienceMember] = []
-    member_row: Dict[str, List[str]]
+    member_row: Dict[str, Any]
     for member_row in member_rows:
+        composite_data = datamanager_v1.CompositeData()
         user_data = datamanager_v1.UserData()
         email: str
         for email in member_row.get("emails", []):
@@ -120,12 +117,60 @@ def main(
             except ValueError:
                 # Skips invalid input.
                 continue
-        if user_data.user_identifiers:
-            # Adds an AudienceMember with the formatted and hashed identifiers.
-            audience_member: datamanager_v1.AudienceMember = (
-                datamanager_v1.AudienceMember()
+
+        for ip_info in member_row.get("ipInfos", []):
+            if (
+                operating_account_type
+                != datamanager_v1.ProductAccount.AccountType.GOOGLE_ADS.name
+            ):
+                _logger.info(
+                    "Skipping IP address information for operating account type %s. "
+                    "Sending IP address is only supported for operating account type GOOGLE_ADS.",
+                    operating_account_type,
+                )
+                continue
+
+            ip_address = ip_info.get("ipAddress", "").strip()
+            if not ip_address:
+                _logger.info(
+                    "Skipping IP address information with no IP address"
+                )
+                continue
+
+            ip_data = datamanager_v1.IpData(ip_address=ip_address)
+
+            start_time_str = ip_info.get("observeStartTime", "").strip()
+            if start_time_str:
+                try:
+                    start_time = Timestamp()
+                    start_time.FromJsonString(start_time_str)
+                    ip_data.observe_start_time = start_time
+                except ValueError:
+                    _logger.info(
+                        "Ignoring observe start time '%s' since it can't be parsed",
+                        start_time_str,
+                    )
+
+            end_time_str = ip_info.get("observeEndTime", "").strip()
+            if end_time_str:
+                try:
+                    end_time = Timestamp()
+                    end_time.FromJsonString(end_time_str)
+                    ip_data.observe_end_time = end_time
+                except ValueError:
+                    _logger.info(
+                        "Ignoring observe end time '%s' since it can't be parsed",
+                        end_time_str,
+                    )
+
+            composite_data.ip_data.append(ip_data)
+
+        if user_data.user_identifiers or composite_data.ip_data:
+            if user_data.user_identifiers:
+                composite_data.user_data = user_data
+            audience_member = datamanager_v1.AudienceMember(
+                composite_data=composite_data
             )
-            audience_member.user_data = user_data
             audience_members.append(audience_member)
 
     # Configures the destination.
@@ -209,7 +254,7 @@ def main(
     _logger.info("# of requests sent: %d", request_count)
 
 
-def read_member_data(json_file: str) -> List[Dict[str, List[str]]]:
+def read_member_data(json_file: str) -> List[Dict[str, Any]]:
     """Reads the JSON member data file.
 
     Args:
