@@ -184,6 +184,25 @@ class Formatter:
             raise ValueError("Region code must be two characters")
         return region_code
 
+    def _format_location_string(self, value: str, label: str) -> str:
+        """Returns the normalized and formatted location string.
+
+        Args:
+          value: the string to format.
+          label: the label used for error messages.
+        Raises:
+          ValueError: If the provided value is invalid.
+        """
+        if value is None:
+            raise ValueError(f"{label} is None")
+        value = value.strip().lower()
+        # Removes all punctuation and special characters, leaving only
+        # alphanumeric characters and whitespace.
+        value = re.sub(r"[^\w\s]|_", "", value)
+        if not value:
+            raise ValueError(f"{label} is blank or empty")
+        return value
+
     def format_address_line(self, address_line: str) -> str:
         """Returns the normalized and formatted address line as a string.
 
@@ -192,15 +211,7 @@ class Formatter:
         Raises:
           ValueError: If the provided address line is invalid.
         """
-        if address_line is None:
-            raise ValueError("Address line is None")
-        address_line = address_line.strip().lower()
-        # Removes all punctuation and special characters, leaving only
-        # alphanumeric characters and whitespace.
-        address_line = re.sub(r"[^\w\s]|_", "", address_line)
-        if not address_line:
-            raise ValueError("Address line is blank or empty")
-        return address_line
+        return self._format_location_string(address_line, "Address line")
 
     def format_city(self, city: str) -> str:
         """Returns the normalized and formatted city as a string.
@@ -210,15 +221,7 @@ class Formatter:
         Raises:
           ValueError: If the provided city is invalid.
         """
-        if city is None:
-            raise ValueError("City is None")
-        city = city.strip().lower()
-        # Removes all punctuation and special characters, leaving only
-        # alphanumeric characters and whitespace.
-        city = re.sub(r"[^\w\s]|_", "", city)
-        if not city:
-            raise ValueError("City is blank or empty")
-        return city
+        return self._format_location_string(city, "City")
 
     def format_administrative_area(self, administrative_area: str) -> str:
         """Returns the normalized and formatted administrative area as a string.
@@ -228,15 +231,7 @@ class Formatter:
         Raises:
           ValueError: If the provided administrative area is invalid.
         """
-        if administrative_area is None:
-            raise ValueError("Administrative area is None")
-        administrative_area = administrative_area.strip().lower()
-        # Removes all punctuation and special characters, leaving only
-        # alphanumeric characters and whitespace.
-        administrative_area = re.sub(r"[^\w\s]|_", "", administrative_area)
-        if not administrative_area:
-            raise ValueError("Administrative area is blank or empty")
-        return administrative_area
+        return self._format_location_string(administrative_area, "Administrative area")
 
     def hash_string(self, s: str) -> bytes:
         """Returns bytes containing the hash of the string.
