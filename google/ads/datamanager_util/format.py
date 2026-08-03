@@ -184,6 +184,55 @@ class Formatter:
             raise ValueError("Region code must be two characters")
         return region_code
 
+    def _format_location_string(self, value: str, label: str) -> str:
+        """Returns the normalized and formatted location string.
+
+        Args:
+          value: the string to format.
+          label: the label used for error messages.
+        Raises:
+          ValueError: If the provided value is invalid.
+        """
+        if value is None:
+            raise ValueError(f"{label} is None")
+        value = value.strip().lower()
+        # Removes all punctuation and special characters, leaving only
+        # alphanumeric characters and whitespace.
+        value = re.sub(r"[^\w\s]|_", "", value)
+        if not value:
+            raise ValueError(f"{label} is blank or empty")
+        return value
+
+    def format_address_line(self, address_line: str) -> str:
+        """Returns the normalized and formatted address line as a string.
+
+        Args:
+          address_line: the address line.
+        Raises:
+          ValueError: If the provided address line is invalid.
+        """
+        return self._format_location_string(address_line, "Address line")
+
+    def format_city(self, city: str) -> str:
+        """Returns the normalized and formatted city as a string.
+
+        Args:
+          city: the city.
+        Raises:
+          ValueError: If the provided city is invalid.
+        """
+        return self._format_location_string(city, "City")
+
+    def format_administrative_area(self, administrative_area: str) -> str:
+        """Returns the normalized and formatted administrative area as a string.
+
+        Args:
+          administrative_area: the administrative area.
+        Raises:
+          ValueError: If the provided administrative area is invalid.
+        """
+        return self._format_location_string(administrative_area, "Administrative area")
+
     def hash_string(self, s: str) -> bytes:
         """Returns bytes containing the hash of the string.
 
@@ -195,8 +244,7 @@ class Formatter:
         """
         if s is None:
             raise ValueError("String is None")
-        s = "".join(s.split())
-        if len(s) == 0:
+        if len(s.strip()) == 0:
             raise ValueError("String is blank or empty")
         return hashlib.sha256(s.encode()).digest()
 
@@ -349,6 +397,55 @@ class Formatter:
             The processed postal code.
         """
         return self.format_postal_code(postal_code)
+
+    def process_address_line(
+        self,
+        address_line: str,
+        encoding: Encoding,
+        encrypter: Optional[Encrypter] = None,
+    ) -> str:
+        """Formats, hashes, and encodes an address line.
+
+        Args:
+            address_line: The address line to process.
+            encoding: The encoding to use.
+            encrypter: An optional Encrypter to use for encryption.
+
+        Returns:
+            The processed address line.
+        """
+        formatted_address_line = self.format_address_line(address_line)
+        if encrypter:
+            return self._hash_encode_and_encrypt(
+                formatted_address_line, encoding, encrypter
+            )
+        return self._hash_and_encode(formatted_address_line, encoding)
+
+    def process_city(self, city: str) -> str:
+        """Processes a city.
+
+        This is a convenience method that simply calls format_city.
+
+        Args:
+            city: The city to process.
+
+        Returns:
+            The processed city.
+        """
+        return self.format_city(city)
+
+    def process_administrative_area(self, administrative_area: str) -> str:
+        """Processes an administrative area.
+
+        This is a convenience method that simply calls format_administrative_area.
+
+        Args:
+            administrative_area: The administrative area to process.
+
+        Returns:
+            The processed administrative area.
+        """
+        return self.format_administrative_area(administrative_area)
 
     def _hash_and_encode(
         self, normalized_string: str, encoding: Encoding

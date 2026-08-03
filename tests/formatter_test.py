@@ -326,3 +326,114 @@ class FormatterTest(TestCase):
         self.assertEqual(
             "1229-076", self.formatter.process_postal_code(" 1229-076  ")
         )
+
+    def test_format_address_line_valid_inputs(self):
+        self.assertEqual(
+            "1800 amphibious blvd",
+            self.formatter.format_address_line(" 1800 Amphibious Blvd.  "),
+        )
+
+    def test_format_address_line_invalid_inputs(self):
+        with self.assertRaises(ValueError):
+            self.formatter.format_address_line(None)
+        with self.assertRaises(ValueError):
+            self.formatter.format_address_line("")
+        with self.assertRaises(ValueError):
+            self.formatter.format_address_line("   ")
+
+    def test_format_city_valid_inputs(self):
+        self.assertEqual(
+            "mountain view",
+            self.formatter.format_city(" Mountain View  "),
+        )
+        self.assertEqual(
+            "mountain view",
+            self.formatter.format_city("Mountain View,"),
+        )
+
+    def test_format_city_invalid_inputs(self):
+        with self.assertRaises(ValueError):
+            self.formatter.format_city(None)
+        with self.assertRaises(ValueError):
+            self.formatter.format_city("")
+        with self.assertRaises(ValueError):
+            self.formatter.format_city("   ")
+
+    def test_format_administrative_area_valid_inputs(self):
+        self.assertEqual(
+            "ca",
+            self.formatter.format_administrative_area(" CA  "),
+        )
+        self.assertEqual(
+            "california",
+            self.formatter.format_administrative_area(" California  "),
+        )
+        self.assertEqual(
+            "ca",
+            self.formatter.format_administrative_area("C.A."),
+        )
+        self.assertEqual(
+            "ca",
+            self.formatter.format_administrative_area("CA."),
+        )
+
+    def test_format_administrative_area_invalid_inputs(self):
+        with self.assertRaises(ValueError):
+            self.formatter.format_administrative_area(None)
+        with self.assertRaises(ValueError):
+            self.formatter.format_administrative_area("")
+        with self.assertRaises(ValueError):
+            self.formatter.format_administrative_area("   ")
+
+    def test_process_address_line_valid_inputs_hex_encoding(self):
+        encoded_hash = (
+            "ff75e73a0e768cc1fa28a64faebbceccb562d7c05f2ffcdd8d100abad73e4579"
+        )
+        self.assertEqual(
+            encoded_hash,
+            self.formatter.process_address_line(
+                " 1800 Amphibious Blvd.  ", Encoding.HEX
+            ),
+        )
+
+    def test_process_address_line_valid_inputs_base64_encoding(self):
+        encoded_hash = "/3XnOg52jMH6KKZPrrvOzLVi18BfL/zdjRAKutc+RXk="
+        self.assertEqual(
+            encoded_hash,
+            self.formatter.process_address_line(
+                " 1800 Amphibious Blvd.  ", Encoding.BASE64
+            ),
+        )
+
+    def test_process_city_valid_inputs(self):
+        self.assertEqual(
+            "mountain view",
+            self.formatter.process_city(" Mountain View  "),
+        )
+
+    def test_process_administrative_area_valid_inputs(self):
+        self.assertEqual(
+            "ca",
+            self.formatter.process_administrative_area(" CA  "),
+        )
+
+    def test_format_example_address(self):
+        # 1800 Amphibious Blvd.
+        # Mountain View, CA 94045
+        self.assertEqual(
+            "1800 amphibious blvd",
+            self.formatter.format_address_line("1800 Amphibious Blvd."),
+        )
+        self.assertEqual(
+            "mountain view",
+            self.formatter.format_city("Mountain View"),
+        )
+        self.assertEqual(
+            "ca",
+            self.formatter.format_administrative_area("CA."),
+        )
+        self.assertEqual(
+            "94045",
+            self.formatter.format_postal_code("94045"),
+        )
+
