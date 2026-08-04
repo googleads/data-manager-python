@@ -231,7 +231,9 @@ class Formatter:
         Raises:
           ValueError: If the provided administrative area is invalid.
         """
-        return self._format_location_string(administrative_area, "Administrative area")
+        return self._format_location_string(
+            administrative_area, "Administrative area"
+        )
 
     def hash_string(self, s: str) -> bytes:
         """Returns bytes containing the hash of the string.
