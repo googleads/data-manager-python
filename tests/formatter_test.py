@@ -436,4 +436,3 @@ class FormatterTest(TestCase):
             "94045",
             self.formatter.format_postal_code("94045"),
         )
-
