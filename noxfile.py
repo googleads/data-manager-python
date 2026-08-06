@@ -16,7 +16,7 @@ import nox
 import os
 import pathlib
 
-PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13"]
+PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
 TEST_COMMAND = [
     "coverage",
@@ -39,7 +39,7 @@ COVERAGE_COMMAND = [
 FREEZE_COMMAND = ["python", "-m", "pip", "freeze"]
 TEST_DEPENDENCIES = [
     "pyfakefs>=5.0.0,<6.0",
-    "coverage==6.5.0",
+    "coverage>=7.0.0",
 ]
 
 
@@ -58,11 +58,4 @@ def tests(session):
 @nox.session(venv_backend="none")
 def format(session):
     """Runs the black formatter and applies formatting fixes."""
-    session.run(
-        "black",
-        "-l",
-        "80",
-        "--exclude",
-        r"/(v[0-9]+|\.eggs|\.git|_cache|\.nox|\.tox|\.venv|\.svn|_build|buck-out|build|dist)/",
-        ".",
-    )
+    session.run("black", ".")

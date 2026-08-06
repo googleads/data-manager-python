@@ -10,9 +10,9 @@ Requirements
 Installation
 ------------
 
-.. code-block::
+.. code-block:: bash
 
-  pip install .
+  pip install google-ads-datamanager-util
 
 Documentation
 -------------
@@ -22,14 +22,14 @@ configure, and use this client library.
 Run samples
 -----------
 
-Samples are provided in the `samples/` directory, and the `samples/sampledata`
+Samples are provided in the ``samples/`` directory, and the ``samples/sampledata``
 directory contains samples of input files you can use with the samples.
 
 To run a sample, invoke the script using the command line. You can pass
 arguments to the script in one of two ways:
 
 1. Explicitly, on the command line
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -40,7 +40,7 @@ arguments to the script in one of two ways:
      --json_file='</path/to/your/file>'
 
 2. Using an arguments file
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can also save arguments in a file, with one argument per line.
 
@@ -71,12 +71,14 @@ https://github.com/googleads/data-manager-python/issues
 Contributing
 ------------
 
-Contributions welcome! See the [Contributing Guide](CONTRIBUTING.md).
+Contributions welcome! See the `Contributing Guide <CONTRIBUTING.md>`_.
 
 Authors
 -------
 
 * `Josh Radcliff`_
+* `Lindsey Volta`_
 
 .. _Developer Site: https://developers.google.com/data-manager/api/get-started/set-up-access#python
 .. _Josh Radcliff: https://github.com/jradcliff
+.. _Lindsey Volta: https://github.com/lindsey-volta

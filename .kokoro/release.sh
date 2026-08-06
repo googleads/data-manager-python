@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-set -x # Echo commands for build transparency in Kokoro logs
 
 # -----------------------------------------------------------------------------
 # 1. Workspace & Directory Resolution
