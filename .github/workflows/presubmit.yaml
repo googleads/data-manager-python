@@ -1,5 +1,6 @@
 # Runs tests and formatting checks on pull requests targeted to main
-permissions: read-all
+permissions:
+  contents: read
 name: Presubmit
 on:
   pull_request:
