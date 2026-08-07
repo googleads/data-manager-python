@@ -1,0 +1,48 @@
+# Runs tests and formatting checks on pull requests targeted to main
+permissions:
+  contents: read
+name: Presubmit
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Code Format Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      with:
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+    - name: Install dependencies
+      run: pip install -e .[dev]
+    - name: Check formatting
+      run: nox -s format
+
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    needs: lint
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      with:
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+      with:
+        python-version: ${{ matrix.python-version }}
+        allow-prereleases: true
+        cache: 'pip'
+    - name: Install dependencies
+      run: pip install -e .[dev]
+    - name: Run tests
+      run: nox -s tests-${{ matrix.python-version }}
