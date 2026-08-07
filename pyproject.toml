@@ -18,24 +18,25 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "google-ads-datamanager-util"
-version = "0.4.0"
+version = "0.4.0rc1"
 description = "Utilities for the Data Manager API"
 readme = "./README.rst"
-requires-python = ">=3.10, <3.14"
-license = {text = "Apache 2.0"}
+requires-python = ">=3.10"
+license = "Apache-2.0"
 authors = [
     {name = "Google LLC", email = "googleapis-packages@google.com"}
 ]
 classifiers = [
-    "Intended Audience :: Developers",
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "PyYAML >= 5.1, < 7.0",
@@ -43,6 +44,12 @@ dependencies = [
     "tink[gcpkms] ~= 1.11",
     "typing_extensions",
 ]
+
+[project.urls]
+Homepage = "https://github.com/googleads/data-manager-python"
+Documentation = "https://developers.google.com/data-manager/api/get-started/set-up-access#python"
+Repository = "https://github.com/googleads/data-manager-python"
+"Issue Tracker" = "https://github.com/googleads/data-manager-python/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -58,4 +65,12 @@ samples = [
 
 [tool.setuptools]
 packages = ["google.ads.datamanager_util"]
+
+[tool.setuptools.package-data]
+"google.ads.datamanager_util" = ["py.typed"]
+
+[tool.black]
+line-length = 80
+# Omit py314 until 3.14 GA to avoid Black AST parser warnings on Python <= 3.13.
+target-version = ["py310", "py311", "py312", "py313"]
 
