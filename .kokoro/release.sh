@@ -29,12 +29,8 @@ pyenv global "${PYENV_VER}"
 python3 -m venv .venv
 source ./.venv/bin/activate
 
-# Upgrade pip and install standard Python build and packaging tools
-python3 -m pip install --upgrade pip
-python3 -m pip install --upgrade \
-    build \
-    twine \
-    keyrings.google-artifactregistry-auth
+# Install standard Python build and packaging tools
+python3 -m pip install --require-hashes -r .kokoro/requirements.txt
 
 # -----------------------------------------------------------------------------
 # 3. Clean and Build Distribution Packages
