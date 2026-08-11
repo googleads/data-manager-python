@@ -41,6 +41,27 @@ twine check dist/*
 # -----------------------------------------------------------------------------
 # 4. Upload to Internal Exit Gate Artifact Registry
 # -----------------------------------------------------------------------------
+EXIT_GATE_PROJECT="oss-exit-gate-prod"
+EXIT_GATE_LOCATION="us"
+EXIT_GATE_REPOSITORY="measurement-devrel--pypi"
+PACKAGE_NAME="google-ads-datamanager-util"
+
+# Delete existing package from the Exit Gate staging repository if present.
+# This prevents twine upload failures on retries or re-releases of the same version.
+if gcloud artifacts packages describe "${PACKAGE_NAME}" \
+    --project="${EXIT_GATE_PROJECT}" \
+    --location="${EXIT_GATE_LOCATION}" \
+    --repository="${EXIT_GATE_REPOSITORY}" &>/dev/null; then
+  echo "=== Deleting existing package '${PACKAGE_NAME}' from Exit Gate staging repository ==="
+  gcloud artifacts packages delete "${PACKAGE_NAME}" \
+    --project="${EXIT_GATE_PROJECT}" \
+    --location="${EXIT_GATE_LOCATION}" \
+    --repository="${EXIT_GATE_REPOSITORY}" \
+    --quiet
+else
+  echo "=== Skipping deletion. Package '${PACKAGE_NAME}' not found in staging repository. This is normal. 🙂 ==="
+fi
+
 # keyrings.google-artifactregistry-auth automatically handles authentication
 # using the ambient Kokoro BYOSA Service Account.
 EXIT_GATE_REPO="https://us-python.pkg.dev/oss-exit-gate-prod/measurement-devrel--pypi"
