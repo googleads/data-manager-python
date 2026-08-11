@@ -13,14 +13,7 @@ echo "=== Building and Releasing from: ${REPO_DIR} ==="
 # -----------------------------------------------------------------------------
 # 2. Environment & Tooling Setup
 # -----------------------------------------------------------------------------
-# Find the latest pre-installed standalone Python version in pyenv. Excludes
-# 'system' because that's a stripped Debian package without 'ensurepip', and
-# 'venv' requires 'ensurepip'.
-PYENV_VER="$(pyenv versions --bare 2>/dev/null | awk '$1 != "system" && $1 ~ /^[0-9]/' | sort -V | tail -n 1)"
-if [[ -z "${PYENV_VER}" ]]; then
-  echo "ERROR: No standalone Python version found in pyenv." >&2
-  exit 1
-fi
+PYENV_VER="3.9.5"
 
 echo "=== Activating pyenv Python version: ${PYENV_VER} ==="
 pyenv global "${PYENV_VER}"
