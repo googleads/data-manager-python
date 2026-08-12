@@ -18,7 +18,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "google-ads-datamanager-util"
-version = "0.4.0rc1"
+version = "0.4.0rc2"
 description = "Utilities for the Data Manager API"
 readme = "./README.rst"
 requires-python = ">=3.10"
@@ -62,6 +62,9 @@ dev = [
 samples = [
     "google-ads-datamanager ~= 0.1",
 ]
+
+[tool.setuptools.package-dir]
+"" = "src"
 
 [tool.setuptools]
 packages = ["google.ads.datamanager_util"]
