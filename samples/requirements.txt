@@ -1,4 +1,3 @@
 # Dependencies for running the samples
---pre
-google-ads-datamanager-util>=0.4.0rc2
+google-ads-datamanager-util>=0.4.0
 google-ads-datamanager~=0.1
