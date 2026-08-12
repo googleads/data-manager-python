@@ -13,7 +13,10 @@ echo "=== Building and Releasing from: ${REPO_DIR} ==="
 # -----------------------------------------------------------------------------
 # 2. Environment & Tooling Setup
 # -----------------------------------------------------------------------------
-PYENV_VER="3.9.5"
+PYENV_VER="3.12"
+
+echo "=== Installing pyenv Python version (if needed): ${PYENV_VER} ==="
+pyenv install -s "${PYENV_VER}"
 
 echo "=== Activating pyenv Python version: ${PYENV_VER} ==="
 pyenv global "${PYENV_VER}"
