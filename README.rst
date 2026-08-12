@@ -25,7 +25,13 @@ Run samples
 Samples are provided in the ``samples/`` directory, and the ``samples/sampledata``
 directory contains samples of input files you can use with the samples.
 
-To run a sample, invoke the script using the command line. You can pass
+To run a sample, first install the sample dependencies:
+
+.. code-block:: bash
+
+   pip install -r samples/requirements.txt
+
+Then invoke the sample script using the command line. You can pass
 arguments to the script in one of two ways:
 
 1. Explicitly, on the command line
@@ -33,7 +39,7 @@ arguments to the script in one of two ways:
 
 .. code-block:: bash
 
-   python3 -m samples.events.ingest_events \
+   python3 samples/events/ingest_events.py \
      --operating_account_type='GOOGLE_ADS' \
      --operating_account_id='<operating_account_id>' \
      --conversion_action_id='<conversion_action_id>' \
@@ -60,7 +66,7 @@ character.
 
 .. code-block:: bash
 
-   python3 -m samples.events.ingest_events @/path/to/your/args.txt
+   python3 samples/events/ingest_events.py @/path/to/your/args.txt
 
 
 Issue tracker
