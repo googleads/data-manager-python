@@ -63,6 +63,9 @@ samples = [
     "google-ads-datamanager ~= 0.1",
 ]
 
+[tool.setuptools.package-dir]
+"" = "src"
+
 [tool.setuptools]
 packages = ["google.ads.datamanager_util"]
 
