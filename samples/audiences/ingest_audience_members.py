@@ -251,6 +251,12 @@ def main(
         # Logs the response.
         _logger.info("Response for request #%d:\n%s", request_count, response)
 
+        if response.field_warnings:
+            _logger.warning(
+                "Field warnings found in response. Review "
+                "warning details and resend the request if needed."
+            )
+
     _logger.info("# of requests sent: %d", request_count)
 
 
