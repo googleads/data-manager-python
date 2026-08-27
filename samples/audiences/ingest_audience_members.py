@@ -253,8 +253,8 @@ def main(
 
         if response.field_warnings:
             _logger.warning(
-                "Field warnings found in response. Review "
-                "warning details and resend the request if needed."
+                "Request ingested successfully, but field warnings were returned. "
+                "Review warning details and update your implementation as needed."
             )
 
     _logger.info("# of requests sent: %d", request_count)
