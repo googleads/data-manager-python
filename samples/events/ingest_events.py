@@ -199,6 +199,12 @@ def main(
         # Logs the response.
         _logger.info("Response for request #%d:\n%s", request_count, response)
 
+        if response.field_warnings:
+            _logger.warning(
+                "Request ingested successfully, but field warnings were returned. "
+                "Review warning details and update your implementation as needed."
+            )
+
     _logger.info("# of requests sent: %d", request_count)
 
 
