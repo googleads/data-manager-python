@@ -134,6 +134,20 @@ def main(
                         event_row["phone_number"],
                     )
 
+        if "cartData" in event_row:
+            cart_data = datamanager_v1.CartData()
+            cart_data_row = event_row["cartData"]
+            if "items" in cart_data_row:
+                for item in cart_data_row["items"]:
+                    cart_data.items.append(
+                        datamanager_v1.Item(
+                            item_id=item["id"],
+                            quantity=item["quantity"],
+                            unit_price=item["unitPrice"],
+                        )
+                    )
+            event.cart_data = cart_data
+
         if user_data.user_identifiers:
             event.user_data = user_data
 
