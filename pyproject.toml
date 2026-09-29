@@ -47,7 +47,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/googleads/data-manager-python"
-Documentation = "https://developers.google.com/data-manager/api/get-started/set-up-access#python"
+Documentation = "https://developers.google.com/data-manager/api/devguides/quickstart/install-library#python"
 Repository = "https://github.com/googleads/data-manager-python"
 "Issue Tracker" = "https://github.com/googleads/data-manager-python/issues"
 
