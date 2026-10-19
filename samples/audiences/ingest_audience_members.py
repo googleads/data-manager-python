@@ -202,10 +202,20 @@ def main(
             )
         )
 
-    # Creates a client for the ingestion service.
-    client: datamanager_v1.IngestionServiceClient = (
-        datamanager_v1.IngestionServiceClient()
+    # [START create_client]
+    # Creates a client for the ingestion service. Increases the maximum
+    # metadata size to 16MB to prevent RESOURCE_EXHAUSTED errors when responses
+    # contain large error details.
+    channel = datamanager_v1.services.ingestion_service.transports.IngestionServiceGrpcTransport.create_channel(
+        options=[("grpc.max_metadata_size", 16 * 1024 * 1024)]
     )
+    transport = datamanager_v1.services.ingestion_service.transports.IngestionServiceGrpcTransport(
+        channel=channel
+    )
+    client: datamanager_v1.IngestionServiceClient = (
+        datamanager_v1.IngestionServiceClient(transport=transport)
+    )
+    # [END create_client]
 
     # Batches requests to send up to the maximum number of audience members per
     # request.
