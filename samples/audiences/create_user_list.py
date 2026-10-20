@@ -121,8 +121,7 @@ def main(
         == datamanager_v1.IngestedUserListInfo.UploadKeyType.CONTACT_ID
     ):
         # Use CONTACT_ID for hashed email addresses, phone numbers, or physical
-        # addresses. Additional metadata is required when CONTACT_ID is
-        # specified.
+        # addresses.
         ingested_user_list_info.contact_id_info = datamanager_v1.ContactIdInfo(
             data_source_type=(
                 datamanager_v1.DataSourceType.DATA_SOURCE_TYPE_FIRST_PARTY
@@ -133,7 +132,6 @@ def main(
         == datamanager_v1.IngestedUserListInfo.UploadKeyType.USER_ID
     ):
         # Use USER_ID for first-party user IDs assigned to logged-in users.
-        # Additional metadata is required when USER_ID is specified.
         ingested_user_list_info.user_id_info = datamanager_v1.UserIdInfo(
             data_source_type=(
                 datamanager_v1.DataSourceType.DATA_SOURCE_TYPE_FIRST_PARTY
@@ -143,8 +141,7 @@ def main(
         upload_key_type
         == datamanager_v1.IngestedUserListInfo.UploadKeyType.MOBILE_ID
     ):
-        # Use MOBILE_ID for mobile advertising IDs (IDFA or AAID). Additional
-        # metadata is required when MOBILE_ID is specified.
+        # Use MOBILE_ID for mobile advertising IDs.
         ingested_user_list_info.mobile_id_info = datamanager_v1.MobileIdInfo(
             data_source_type=(
                 datamanager_v1.DataSourceType.DATA_SOURCE_TYPE_FIRST_PARTY
