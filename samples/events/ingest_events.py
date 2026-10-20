@@ -162,9 +162,17 @@ def main(
         destination.linked_account.account_type = linked_account_type
         destination.linked_account.account_id = linked_account_id
 
-    # Creates a client for the ingestion service.
+    # Creates a client for the ingestion service. Increases the maximum
+    # metadata size to 16MB to prevent RESOURCE_EXHAUSTED errors when responses
+    # contain large error details.
+    channel = datamanager_v1.services.ingestion_service.transports.IngestionServiceGrpcTransport.create_channel(
+        options=[("grpc.max_metadata_size", 16 * 1024 * 1024)]
+    )
+    transport = datamanager_v1.services.ingestion_service.transports.IngestionServiceGrpcTransport(
+        channel=channel
+    )
     client: datamanager_v1.IngestionServiceClient = (
-        datamanager_v1.IngestionServiceClient()
+        datamanager_v1.IngestionServiceClient(transport=transport)
     )
 
     # Batches requests to send up to the maximum number of events per
