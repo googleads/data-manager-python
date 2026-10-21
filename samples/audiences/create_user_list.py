@@ -197,6 +197,13 @@ if __name__ == "__main__":
     # Configures logging.
     logging.basicConfig(level=logging.INFO)
 
+    account_type_choices = [
+        account_type.name
+        for account_type in datamanager_v1.ProductAccount.AccountType
+        if account_type
+        != datamanager_v1.ProductAccount.AccountType.ACCOUNT_TYPE_UNSPECIFIED
+    ]
+
     parser = argparse.ArgumentParser(
         description="Creates a user list in an operating account.",
         fromfile_prefix_chars="@",
@@ -204,7 +211,7 @@ if __name__ == "__main__":
     # The following argument(s) should be provided to run the example.
     parser.add_argument(
         "--operating_account_type",
-        type=str,
+        choices=account_type_choices,
         required=True,
         help="The account type of the operating account.",
     )
@@ -222,7 +229,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--login_account_type",
-        type=str,
+        choices=account_type_choices,
         required=False,
         help="The account type of the login account.",
     )
@@ -234,7 +241,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--linked_account_type",
-        type=str,
+        choices=account_type_choices,
         required=False,
         help="The account type of the linked account.",
     )
