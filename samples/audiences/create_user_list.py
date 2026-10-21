@@ -96,7 +96,7 @@ def main(
         headers.append(
             (
                 "login-account",
-                f"accountTypes/{login_account_type}/accounts/{login_account_id}",
+                f"accountTypes/{login_account_type.name}/accounts/{login_account_id}",
             )
         )
 
@@ -104,7 +104,7 @@ def main(
         headers.append(
             (
                 "linked-account",
-                f"accountTypes/{linked_account_type}/accounts/{linked_account_id}",
+                f"accountTypes/{linked_account_type.name}/accounts/{linked_account_id}",
             )
         )
 
@@ -173,7 +173,7 @@ def main(
 
     # Builds the request targeting the parent operating account.
     request = datamanager_v1.CreateUserListRequest(
-        parent=f"accountTypes/{operating_account_type}/accounts/{operating_account_id}",
+        parent=f"accountTypes/{operating_account_type.name}/accounts/{operating_account_id}",
         user_list=user_list,
         # Sets validate_only. If true, then the Data Manager API only
         # validates the request but doesn't apply changes.
@@ -270,13 +270,21 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(
-        args.operating_account_type,
+        datamanager_v1.ProductAccount.AccountType[args.operating_account_type],
         args.operating_account_id,
         args.validate_only == "true",
         datamanager_v1.IngestedUserListInfo.UploadKeyType[args.upload_key_type],
-        args.login_account_type,
+        (
+            datamanager_v1.ProductAccount.AccountType[args.login_account_type]
+            if args.login_account_type
+            else None
+        ),
         args.login_account_id,
-        args.linked_account_type,
+        (
+            datamanager_v1.ProductAccount.AccountType[args.linked_account_type]
+            if args.linked_account_type
+            else None
+        ),
         args.linked_account_id,
         (
             datamanager_v1.MobileIdInfo.KeySpace[args.key_space]
