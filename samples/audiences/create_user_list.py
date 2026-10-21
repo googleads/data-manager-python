@@ -96,7 +96,7 @@ def main(
         headers.append(
             (
                 "login-account",
-                f"accountTypes/{login_account_type}/accounts/{login_account_id}",
+                f"accountTypes/{login_account_type.name}/accounts/{login_account_id}",
             )
         )
 
@@ -104,7 +104,7 @@ def main(
         headers.append(
             (
                 "linked-account",
-                f"accountTypes/{linked_account_type}/accounts/{linked_account_id}",
+                f"accountTypes/{linked_account_type.name}/accounts/{linked_account_id}",
             )
         )
 
@@ -173,7 +173,7 @@ def main(
 
     # Builds the request targeting the parent operating account.
     request = datamanager_v1.CreateUserListRequest(
-        parent=f"accountTypes/{operating_account_type}/accounts/{operating_account_id}",
+        parent=f"accountTypes/{operating_account_type.name}/accounts/{operating_account_id}",
         user_list=user_list,
         # Sets validate_only. If true, then the Data Manager API only
         # validates the request but doesn't apply changes.
@@ -197,6 +197,13 @@ if __name__ == "__main__":
     # Configures logging.
     logging.basicConfig(level=logging.INFO)
 
+    account_type_choices = [
+        account_type.name
+        for account_type in datamanager_v1.ProductAccount.AccountType
+        if account_type
+        != datamanager_v1.ProductAccount.AccountType.ACCOUNT_TYPE_UNSPECIFIED
+    ]
+
     parser = argparse.ArgumentParser(
         description="Creates a user list in an operating account.",
         fromfile_prefix_chars="@",
@@ -204,7 +211,7 @@ if __name__ == "__main__":
     # The following argument(s) should be provided to run the example.
     parser.add_argument(
         "--operating_account_type",
-        type=str,
+        choices=account_type_choices,
         required=True,
         help="The account type of the operating account.",
     )
@@ -222,7 +229,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--login_account_type",
-        type=str,
+        choices=account_type_choices,
         required=False,
         help="The account type of the login account.",
     )
@@ -234,7 +241,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--linked_account_type",
-        type=str,
+        choices=account_type_choices,
         required=False,
         help="The account type of the linked account.",
     )
@@ -270,13 +277,21 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(
-        args.operating_account_type,
+        datamanager_v1.ProductAccount.AccountType[args.operating_account_type],
         args.operating_account_id,
         args.validate_only == "true",
         datamanager_v1.IngestedUserListInfo.UploadKeyType[args.upload_key_type],
-        args.login_account_type,
+        (
+            datamanager_v1.ProductAccount.AccountType[args.login_account_type]
+            if args.login_account_type
+            else None
+        ),
         args.login_account_id,
-        args.linked_account_type,
+        (
+            datamanager_v1.ProductAccount.AccountType[args.linked_account_type]
+            if args.linked_account_type
+            else None
+        ),
         args.linked_account_id,
         (
             datamanager_v1.MobileIdInfo.KeySpace[args.key_space]
