@@ -55,10 +55,24 @@ def tests(session):
     session.run(*COVERAGE_COMMAND)
 
 
+def _format(session, check=False):
+    black_command = ["black"]
+    if check:
+        black_command.append("--check")
+    black_command.append(".")
+    session.run(*black_command)
+
+
+@nox.session(venv_backend="none")
+def lint(session):
+    """Fails if the code is not formatted correctly."""
+    _format(session, check=True)
+
+
 @nox.session(venv_backend="none")
 def format(session):
     """Runs the black formatter and applies formatting fixes."""
-    session.run("black", ".")
+    _format(session)
 
 
 @nox.session(python="3.12")
