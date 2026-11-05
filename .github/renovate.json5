@@ -24,4 +24,13 @@
         ],
         "minimumReleaseAge": null
     },
+    "packageRules": [
+        {
+            "description": "Bundle all updates that affect .kokoro/requirements.txt",
+            "matchFileNames": [
+                ".kokoro/requirements.txt"
+            ],
+            "groupName": "Release job dependencies"
+        }
+    ]
 }
