@@ -101,3 +101,40 @@ def compile_kokoro_requirements(session):
         ".kokoro/requirements.in",
         env={"CUSTOM_COMPILE_COMMAND": custom_command},
     )
+
+
+@nox.session(python="3.12")
+def test_kokoro(session):
+    """Verifies .kokoro/requirements.txt, package build, and keyring setup."""
+    # Verify hashes and dependency compatibility for pinned release tools.
+    session.install("--require-hashes", "-r", ".kokoro/requirements.txt")
+    session.run("python", "-m", "pip", "check")
+
+    # Verify the Python keyring package (from .kokoro/requirements.txt) loads
+    # the Artifact Registry auth plugin used by twine upload during releases.
+    session.run("python", "-c", "import keyrings.gauth")
+    backends = session.run("keyring", "--list-backends", silent=True)
+    session.log(backends)
+    if "keyrings.gauth.GooglePythonAuth" not in backends:
+        session.error("keyrings.gauth.GooglePythonAuth backend not registered")
+
+    # Build sdist and wheel into a temp dir and validate metadata/README
+    # rendering with the pinned twine package.
+    tmp_dir = pathlib.Path(session.create_tmp())
+    dist_dir = tmp_dir / "dist"
+    session.run("python", "-m", "build", "--outdir", str(dist_dir))
+    session.run("twine", "--version")
+    session.run("twine", "check", *(str(p) for p in dist_dir.iterdir()))
+
+    # Smoke-test that the built wheel installs and imports cleanly.
+    smoke_dir = tmp_dir / "smoke-venv"
+    session.run("python", "-m", "venv", str(smoke_dir))
+    smoke_python = str(smoke_dir / "bin" / "python")
+    wheel = next(dist_dir.glob("*.whl"))
+    session.run(smoke_python, "-m", "pip", "install", str(wheel), external=True)
+    session.run(
+        smoke_python,
+        "-c",
+        "import google.ads.datamanager_util",
+        external=True,
+    )
